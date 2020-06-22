@@ -1,4 +1,4 @@
-# Udacity-SCD-Self-Driving-Car-Engineer-nd
+# Udacity Self-Driving Car Engineer Nanodegree (SDCe-ND)
 
 In this repository I'll track my completed projects for the Udacity [Self-driving Car Engineer Nanodegree](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013).
 
