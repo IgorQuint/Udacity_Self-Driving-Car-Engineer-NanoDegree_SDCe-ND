@@ -45,19 +45,11 @@ You're reading it!
 
 The code for this step is contained in the third code cell of the IPython notebook located in "Project2.ipynb".
 
-I start by setting a grid, based on the number of chessboard corners I can count in the image.  "object points", which will contain the (x, y, z) coordinates of each chessboard corner from the provided camera images. Using these points for every provided calibration image, the image points, which are the detected point using the 'cv2.findChessboardCorners()' function, are projected onto the undistorted points. 
-
-<<<<<<< HEAD
-![Detected corners on chessboard calibration image](images/corners_chess.png)
-
-Using both arrays, the calibration coefficients are determined and used to undistort the test image in code cell 4. 
-=======
-Using both arrays, the calibration coefficients are determined and used to undistort the test image in code cell 4. 
+I start by setting a grid, based on the number of chessboard corners I can count in the image.  "object points", which will contain the (x, y, z) coordinates of each chessboard corner from the provided camera images. Using these points for every provided calibration image, the image points, which are the detected point using the 'cv2.findChessboardCorners()' function, are projected onto the undistorted points.
 
 ![Detected corners on chessboard calibration image](images/corners_chess.png)
 
-I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
->>>>>>> af8267ce8887dc41752b32b5f1d31a6c971def2f
+Using both arrays, the calibration coefficients are determined and used to undistort the test image in code cell 4. 
 
 ![Undistorted chessboard calibration image](images/undistort_chess.png)
 
@@ -77,30 +69,10 @@ To create the thresholded image, I end up using the sobel operator in the x-dire
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-<<<<<<< HEAD
-=======
-Instead of seperately slicing out my region of interest, I've done this while warping the image to obtain a top-down/birdseye view of the road. In the warpimage function, I use source and destinationpoints to determine where my outer vertex points will end up in the warped image.
-
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
-
-|Source|Destination|
-|-----:|----------:|
-|(585, 455)|(200,0)|
-|(705, 455)|(maxX - 200, 0)|
-|(1130, 720)|(maxX - 200, maxY)|
-|(190, 720)|(200, maxY)|
-
-This resulted in the following source and destination points:
-
->>>>>>> af8267ce8887dc41752b32b5f1d31a6c971def2f
 Instead of seperately slicing out my region of interest, I've done this while warping the image to obtain a top-down/birdseye view of the road. In the warpimage function, I use source and destination points to determine where my outer vertex points will end up in the warped image.
 
 The source and destination points were eyeballed from the various test images. I used these values:
 
-<<<<<<< HEAD
-=======
-
->>>>>>> af8267ce8887dc41752b32b5f1d31a6c971def2f
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
 | 580, 455      | 180, 0        | 
@@ -114,9 +86,12 @@ The source and destination points were eyeballed from the various test images. I
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+Using the lane line finding code, which is part of the course material, the same method of sliding windows and fitting polygons is applied to the masked image. First, a histogram is generated of the bottom half of the masked image to find the starting points for the lines. These values are then saved.
+![Histogram](images/histogram.png)
 
-![alt text][image5]
+
+Next, the sliding windows are placed above the starting points. Trying to recenter on all new lane pixels. Finally, using these windows, polygons are fitted to the centers of each window.
+![Sliding windows & polygons](images/slidingwindows_lane.png)
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
@@ -134,7 +109,8 @@ I implemented this step in lines # through # in my code in `yet_another_file.py`
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video.mp4)
+See the project output video:
+[video_output](./video_output/project_video.mp4)
 
 ---
 
@@ -142,4 +118,6 @@ Here's a [link to my video result](./project_video.mp4)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+Few issues arose during the project:
+- hard to find the source points for the warping step
+- very sensitive parameters for saturation and sobel steps
