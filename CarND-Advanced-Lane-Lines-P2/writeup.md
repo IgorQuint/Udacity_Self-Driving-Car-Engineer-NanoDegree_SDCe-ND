@@ -125,6 +125,9 @@ See the project output video:
 
 [video_output](./output_videos/lane_detection_video.mp4)
 
+I have used the function written by Udacity & Github user "ndrplz" to integrate the thumnails of intermediary steps into a blended output frame, as can be seen in the thumbnail below:
+
+![Video screenshot](images/video_blend_frame.png)
 ---
 
 ### Discussion
