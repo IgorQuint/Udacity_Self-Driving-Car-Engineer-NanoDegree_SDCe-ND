@@ -86,9 +86,12 @@ The source and destination points were eyeballed from the various test images. I
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+Using the lane line finding code, which is part of the course material, the same method of sliding windows and fitting polygons is applied to the masked image. First, a histogram is generated of the bottom half of the masked image to find the starting points for the lines. These values are then saved.
+![Histogram](images/histogram.png)
 
-![alt text][image5]
+
+Next, the sliding windows are placed above the starting points. Trying to recenter on all new lane pixels. Finally, using these windows, polygons are fitted to the centers of each window.
+![Sliding windows & polygons](images/slidingwindows_lane.png)
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
@@ -106,7 +109,8 @@ I implemented this step in lines # through # in my code in `yet_another_file.py`
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video.mp4)
+See the project output video:
+[video_output](./video_output/project_video.mp4)
 
 ---
 
@@ -114,4 +118,6 @@ Here's a [link to my video result](./project_video.mp4)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+Few issues arose during the project:
+- hard to find the source points for the warping step
+- very sensitive parameters for saturation and sobel steps
