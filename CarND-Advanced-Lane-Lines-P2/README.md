@@ -123,7 +123,7 @@ Projecting the polygons back onto the image, using the inverse warp coefficient 
 
 See the project output video:
 
-[video_output](./ouput_videos/lane_detection_video.mp4)
+[video_output](./output_videos/lane_detection_video.mp4)
 
 ---
 
