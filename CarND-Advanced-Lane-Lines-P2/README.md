@@ -63,7 +63,16 @@ See the image underneath, the distorted vs the undistorted test image:
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-To create the thresholded image, I end up using the sobel operator in the x-direction, as well as the separated saturation channel from HLS color space. The image underneath shows how both generate the thresholded image. On the left image, the contribution from the sobel operator is shown in green whereas the saturation channel mask is show in blue: 
+To create the thresholded image, I end up using the sobel operator in the x-direction, as well as the separated saturation channel from HLS color space. 
+As can be seen from the following image, the saturation channel provides a crisp image in which the lane marking stands out.
+
+![Thresholded image](images/sat_threshold.png)
+
+To work with the sobel operator in the horizontal direction, I did a sensitivity analysis with various upper and lower thresholds:
+
+![Thresholded image](images/xsobel.png)
+
+The image underneath shows how both work to generate the thresholded image. On the left image, the contribution from the sobel operator is shown in green whereas the saturation channel mask is show in blue: 
 
 ![Thresholded image](images/threshold.png)
 
@@ -80,6 +89,11 @@ The source and destination points were eyeballed from the various test images. I
 | 1100, 695     | 1100, 720      |
 | 250, 695      | 180, 720        |
 
+In the following picture, the blue dots represent the destination points, whereas the red points represent the source points. 
+
+![Warped undistorted image](images/Source_dst_points.png)
+
+In the images underneath, you will see how the warp transforms the images into a top-down view.
 
 ![Warped undistorted image](images/warp_original.png)
 ![Warped thresholded image](images/warp_masked.png)
