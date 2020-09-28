@@ -43,11 +43,11 @@ You're reading it!
 
 #### 1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 
-The code for this step is contained in the first code cell of the IPython notebook located in "./examples/example.ipynb" (or in lines # through # of the file called `some_file.py`).  
+The code for this step is contained in the third code cell of the IPython notebook located in "Project2.ipynb".
 
-I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
+I start by setting a grid, based on the number of chessboard corners I can count in the image.  "object points", which will contain the (x, y, z) coordinates of each chessboard corner from the provided camera images. Using these points for every provided calibration image, the image points, which are the detected point using the 'cv2.findChessboardCorners()' function, are projected onto the undistorted points.
 
-I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
+Using both arrays, the calibration coefficients are determined and used to undistort the test image in code cell 4. 
 
 ![alt text][image1]
 
@@ -55,32 +55,27 @@ I then used the output `objpoints` and `imgpoints` to compute the camera calibra
 
 #### 1. Provide an example of a distortion-corrected image.
 
-To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
-![alt text][image2]
+See the image underneath, the distorted vs the undistorted test image:
+[alt text][image2]
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+To create the thresholded image, I end up using the sobel operator in the x-direction, as well as the separated saturation channel from HLS color space. The image underneath shows how both generate the thresholded image. On the left image, the contribution from the sobel operator is shown in green whereas the saturation channel mask is show in blue: 
 
 ![alt text][image3]
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
+Instead of seperately slicing out my region of interest, I've done this while warping the image to obtain a top-down/birdseye view of the road. In the warpimage function, I use source and destinationpoints to determine where my outer vertex points will end up in the warped image.
+
 The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
 
-```python
-src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
-dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
-```
-
+|Source|Destination|
+|-----:|----------:|
+|(585, 455)|(200,0)|
+|(705, 455)|(maxX - 200, 0)|
+|(1130, 720)|(maxX - 200, maxY)|
+|(190, 720)|(200, maxY)|
 This resulted in the following source and destination points:
 
 | Source        | Destination   | 
