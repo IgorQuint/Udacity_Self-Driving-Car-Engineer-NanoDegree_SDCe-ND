@@ -14,4 +14,4 @@ Determine region of interest using a polygon, grayscaling and blurring, determin
 ### Advanced Lane Line Detection
 Determine region of interest using a polygon, grayscaling and blurring, determine edges using Canny Edge Detection and transform these into Hough space to find the lane lanes in a video.
 
-![Advanced lane line detection video gif](images/advanced_lane_lines_output.png)
+![Advanced lane line detection video gif](images/advanced_lane_lines_output.gif)
