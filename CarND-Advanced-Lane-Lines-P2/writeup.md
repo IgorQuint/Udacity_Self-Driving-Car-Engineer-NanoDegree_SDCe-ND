@@ -95,13 +95,23 @@ Next, the sliding windows are placed above the starting points. Trying to recent
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
-
+The radius and offset are calculated using the following function. 
+```
+def curvature(left_fit, right_fit, ym_per_pixel, xm_per_pixel):
+    left_curverad =  ((1 + (2*left_fit[0]*720*ym_per_pixel + left_fit[1])**2)**(3/2))/np.abs(2*left_fit[0])
+    right_curverad =  ((1 + (2*right_fit[0]*720*ym_per_pixel + right_fit[1])**2)**(3/2))/np.abs(2*right_fit[0])
+    
+    left_lane = left_fit[0]*(720*ym_per_pixel)**2 + left_fit[1]*720*ym_per_pixel + left_fit[2]
+    right_lane = right_fit[0]*(720*ym_per_pixel)**2 + right_fit[1]*720*ym_per_pixel + right_fit[2]
+    
+    radius = np.mean([left_curverad, right_curverad])
+    offset = [920*xm_per_pixel - np.mean([left_lane, right_lane]), right_lane-left_lane]
+    return radius, offset
+```
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
-
-![alt text][image6]
+Projecting the polygons back onto the image, using the inverse warp coefficient yields the image underneath:
+![Final image](images/projected_lane_line_image.png)
 
 ---
 
