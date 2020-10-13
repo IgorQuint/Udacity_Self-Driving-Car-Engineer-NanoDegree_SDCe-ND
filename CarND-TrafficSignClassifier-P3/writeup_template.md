@@ -36,7 +36,7 @@ The goals / steps of this project are the following:
 
 #### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one. You can submit your writeup as markdown or pdf. You can use this template as a guide for writing the report. The submission includes the project code.
 
-You're reading it! and here is a link to my [project code](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb)
+You're reading it! and here is a link to my [project code](https://github.com/IgorQuint/Udacity_Self-Driving-Car-Engineer-NanoDegree_SDCe-ND/blob/master/CarND-TrafficSignClassifier-P3/Traffic_Sign_Classifier.ipynb)
 
 ### Data Set Summary & Exploration
 
@@ -45,17 +45,17 @@ You're reading it! and here is a link to my [project code](https://github.com/ud
 I used the pandas library to calculate summary statistics of the traffic
 signs data set:
 
-* The size of training set is ?
-* The size of the validation set is ?
-* The size of test set is ?
-* The shape of a traffic sign image is ?
-* The number of unique classes/labels in the data set is ?
+* The size of training set is 34,799
+* The size of the validation set is 4,410
+* The size of test set is 12,630
+* The shape of a traffic sign image is 32x32
+* The number of unique classes/labels in the data set is 43
 
 #### 2. Include an exploratory visualization of the dataset.
 
-Here is an exploratory visualization of the data set. It is a bar chart showing how the data ...
+Here is an exploratory visualization of the data set. It is a matplotlib imagegrid showing the first example in the training set of every individual label in the set.
 
-![alt text][image1]
+![imagegrid with all traffic signs in training set](images/all_signs.png)
 
 ### Design and Test a Model Architecture
 
@@ -87,11 +87,13 @@ My final model consisted of the following layers:
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
 | Input         		| 32x32x3 RGB image   							| 
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
+| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x6 	|
 | RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
-| Convolution 3x3	    | etc.      									|
-| Fully connected		| etc.        									|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x6 				|
+| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x16 	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 5x5x16 				|
+| Fully connected		| input 400, output 120, flat				|
 | Softmax				| etc.        									|
 |						|												|
 |						|												|
