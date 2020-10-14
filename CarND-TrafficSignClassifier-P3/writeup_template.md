@@ -140,7 +140,10 @@ Here are five German traffic signs that I found on the web:
 <img src="web_img/auto-2.jpg" width="100">
 <img src="web_img/download (3).png" width="100">
 
+
 After preprocessing these images are used for classification. Below a visualization with labels:
+
+
 ![vizualization web images preprocessed](images/preprocessed_web_images.png) 
 
 
