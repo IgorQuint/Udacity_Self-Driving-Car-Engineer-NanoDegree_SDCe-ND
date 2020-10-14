@@ -65,8 +65,8 @@ As a first step, I decided to convert the images to grayscale because ...
 
 Here is an example of a traffic sign image before and after grayscaling.
 
-![no entry][web_img/66838255-road-sign-one-way-street-germany-europe.jpg] 
-![no entry][images/no_entry_gray.png] 
+![image_before processing](web_img/66838255-road-sign-one-way-street-germany-europe.jpg)
+![image_after processing](images/no_entry_gray.png) 
 
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
@@ -115,7 +115,7 @@ My final model results were:
 * test set accuracy of .872
 
 See the accuracy improve after every epoch:
-![Epoch overview][images/epoch.png] 
+![Epoch overview](images/epoch.png)
 
 An well known network architecture was chosen:
 * What architecture was chosen?
@@ -134,13 +134,13 @@ The accuracy on the training, validation and test set are all relatively high (>
 
 Here are five German traffic signs that I found on the web:
 
-![no passing][web_img/35822957-german-traffic-sign-no-overtaking-.jpg] ![20km/hour][web_img/36476396-german-traffic-sign-restricting-speed-to-20-kilometers-per-hour-.jpg] ![no entry][web_img/66838255-road-sign-one-way-street-germany-europe.jpg] 
-![60km/hour][web_img/auto-2.jpg] ![stop sign][web_img/download (3).png]
+![no passing](web_img/35822957-german-traffic-sign-no-overtaking-.jpg) ![20km/hour](web_img/36476396-german-traffic-sign-restricting-speed-to-20-kilometers-per-hour-.jpg) ![no entry](web_img/66838255-road-sign-one-way-street-germany-europe.jpg)
+![60km/hour](web_img/auto-2.jpg) ![stop sign](web_img/download (3).png)
 
 The first image might be difficult to classify because ...
 
 After preprocessing these images are used for classification. Below a visualization with labels:
-![vizualization web images preprocessed][images/preprocessed_web_images.png] 
+![vizualization web images preprocessed](images/preprocessed_web_images.png) 
 
 
 #### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
