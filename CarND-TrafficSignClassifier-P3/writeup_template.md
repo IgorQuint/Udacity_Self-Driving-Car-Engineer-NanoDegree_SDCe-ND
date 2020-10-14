@@ -65,8 +65,8 @@ As a first step, I decided to convert the images to grayscale because ...
 
 Here is an example of a traffic sign image before and after grayscaling.
 
-![image_before processing]<img src="web_img/66838255-road-sign-one-way-street-germany-europe.jpg" width="32">
-![image_after processing](images/no_entry_gray.png) 
+<img src="web_img/66838255-road-sign-one-way-street-germany-europe.jpg" width="166">
+<img src="images/no_entry_gray.png" width="166">
 
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
@@ -134,10 +134,11 @@ The accuracy on the training, validation and test set are all relatively high (>
 
 Here are five German traffic signs that I found on the web:
 
-![no passing](web_img/35822957-german-traffic-sign-no-overtaking-.jpg =32x32) ![20km/hour](web_img/36476396-german-traffic-sign-restricting-speed-to-20-kilometers-per-hour-.jpg =32x32) ![no entry](web_img/66838255-road-sign-one-way-street-germany-europe.jpg =32x32)
-![60km/hour](web_img/auto-2.jpg =32x32) ![stop sign](web_img/download (3).png =32x32)
-
-The first image might be difficult to classify because ...
+<img src="web_img/35822957-german-traffic-sign-no-overtaking-.jpg" width="100">
+<img src="web_img/36476396-german-traffic-sign-restricting-speed-to-20-kilometers-per-hour-.jpg" width="100">
+<img src="web_img/66838255-road-sign-one-way-street-germany-europe.jpg" width="100">
+<img src="web_img/auto-2.jpg" width="100">
+<img src="web_img/download (3).png" width="100">
 
 After preprocessing these images are used for classification. Below a visualization with labels:
 ![vizualization web images preprocessed](images/preprocessed_web_images.png) 
