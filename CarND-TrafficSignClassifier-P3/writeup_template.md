@@ -65,7 +65,7 @@ As a first step, I decided to convert the images to grayscale because ...
 
 Here is an example of a traffic sign image before and after grayscaling.
 
-![image_before processing](web_img/66838255-road-sign-one-way-street-germany-europe.jpg width="32")
+![image_before processing]<img src="web_img/66838255-road-sign-one-way-street-germany-europe.jpg" width="32">
 ![image_after processing](images/no_entry_gray.png) 
 
 
