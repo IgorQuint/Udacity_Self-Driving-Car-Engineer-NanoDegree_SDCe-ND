@@ -99,10 +99,10 @@ To train the model, I used an Adam optimizer on the cross entropy loss of the so
 
 | HyperParameter         		|     Value	        					| 
 |:---------------------:|:---------------------------------------------:| 
-| Epocs         		| 120   							| 
-| Batchsize     	| 128 	|
+| Epocs         		| 250   							| 
+| Batchsize     	| 256 	|
 | Dropout					| 0.6 												|
-| Learning rate	      	| 0.0001 				|
+| Learning rate	      	| 0.001 				|
 | Mu	      	| 0 				|
 | Sigma	      	| 0.1 				|
 
@@ -110,9 +110,9 @@ To train the model, I used an Adam optimizer on the cross entropy loss of the so
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
 My final model results were:
-* training set accuracy of .956
-* validation set accuracy of .883
-* test set accuracy of .872
+* training set accuracy of .995
+* validation set accuracy of .46
+* test set accuracy of .931
 
 See the accuracy improve after every epoch:
 ![Epoch overview](images/epoch.png)
@@ -146,6 +146,8 @@ After preprocessing these images are used for classification. Below a visualizat
 
 ![vizualization web images preprocessed](images/preprocessed_web_images.png) 
 
+All but the third image should be relatively easy to classify. These images are basically clipart, pictograms where the sign is already centered and not negatively impacted by lighting conditions.
+The third image is an actual photo, where the sign is smaller than the entire picture. This makes is somewhat harder for the net to classify, as not every part of the image needs to be processed through the net.
 
 #### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
 
