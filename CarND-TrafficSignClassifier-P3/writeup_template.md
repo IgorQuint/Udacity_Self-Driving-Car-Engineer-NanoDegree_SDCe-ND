@@ -111,7 +111,7 @@ To train the model, I used an Adam optimizer on the cross entropy loss of the so
 
 My final model results were:
 * training set accuracy of .995
-* validation set accuracy of .46
+* validation set accuracy of .946
 * test set accuracy of .931
 
 See the accuracy improve after every epoch:
@@ -125,7 +125,7 @@ I used the LeNet architecture based on the paper by Yann leCunn
 Works very well for image classification.
 
 * How does the final model's accuracy on the training, validation and test set provide evidence that the model is working well?
-The accuracy on the training, validation and test set are all relatively high (>.850), implying steady model performance out of sample. Therefore overfitting is unlikely.
+The accuracy on the training, validation and test set are all evry high (>.930), implying steady model performance out of sample. Therefore overfitting is unlikely.
 
 
 ### Test a Model on New Images
