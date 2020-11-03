@@ -117,11 +117,12 @@ I then recorded the vehicle recovering from the left side and right sides of the
 These images show what a recovery looks like:
 
 ![left_save][drivedata/IMG/left_2020_11_02_20_02_09_463.jpg]
+
 ![right_save][drivedata/IMG/center_2020_11_02_20_05_07_455.jpg]
 
 To augment the data set, I also flipped images and angles to help the generalization of the trained model. For example, here is an image that has then been flipped:
 
-![flipped_img][center_2020_11_02_19_56_41_682.jpg]
+![flipped_img][drivedata/IMG/center_2020_11_02_19_56_41_682.jpg]
 
 After the collection process, I had 6398 number of data points. I then preprocessed this data by cropping 50 and 20 pixels respectively from the top and bottom of the image. Futhermore the images are normalized. 
 Finally I randomly shuffled the data set and put 10% of the data into a validation set. 
