@@ -2,77 +2,28 @@
 #Import packages
 import cv2
 import glob
-import random
 import pandas as pd
-import numpy as np
-from keras.optimizers import Adam
-from keras.callbacks import ModelCheckpoint
-from keras.models import Sequential
-from keras.layers import Conv2D, Cropping2D, Dense, Dropout, Flatten, Lambda
-from sklearn.model_selection import train_test_split
-import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import numpy as np
+import random
 
-# Hyperparameters
+# Setting hyperparameters
 test_size = 0.10
 batch_size = 64
 epochs = 9
-additional_training_data = True
 
-def augment(image, measurement):
-    """ Randomly augments an image and it's corresponding steering angle.
-    Args:
-        image (np.array): array representation of an image
-        measurement (float): steering angle
-    Returns:
-        image (np.array): array representation of an image
-        measurement (float): steering angle
-    """
-    # randomly flip the image and measurement
-    if np.random.rand() < 0.5:
-        image = np.fliplr(image)
-        measurement = -measurement
-    # randomly adjust the brighness of the image
-    if np.random.rand() < 0.5:
-        delta_pct = random.uniform(0.4, 1.2)
-        hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-        hsv[:, :, 2] = hsv[:, :, 2] * delta_pct
-        image = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
-    return image, measurement
+from sklearn.model_selection import train_test_split
 
-
-def load_image(image_file):
-    """ Loads RGB images from a file
-    Args:
-        image_file (str): name of image file
-    Returns:
-        numpy array representation of the image
-    """
-    image_file = image_file.strip()
-    if image_file.split('/')[0] == 'IMG':
-        image_file = '/drivedata/{}'.format(image_file)
-    return mpimg.imread(image_file)
-
-
-def load_data(test_size, additional_training_data=False):
-    """ Loads the data from a directory and split it into
-    training and testing datasets.
-    Args:
-        test_size (float): percentage of data to hold out for testing
-    Returns:
-        List containing train-test split of inputs. (X_train, X_val, y_train, y_val)
+def load_data(test_size):
+    """ 
+    Load and split data into test & training sets
     """
     header = None
     names = ['center', 'left', 'right', 'steering', 'throttle', 'brake', 'speed']
     data_df = pd.read_csv('drivedata/driving_log.csv',
                           header=header, names=names)
 
-    if additional_training_data:
-        for filename in glob.glob('training_data/*.csv'):
-            tmp_df = pd.read_csv(filename, header=header, names=names)
-            data_df = pd.concat([data_df, tmp_df])
-
-    # ignore header rows of additional training data
     data_df = data_df[(data_df.center != 'center') |
                       (data_df.left != 'left') |
                       (data_df.right != 'right')]
@@ -82,15 +33,38 @@ def load_data(test_size, additional_training_data=False):
 
     return train_test_split(X, y, test_size=test_size)
 
+def load_image(image_file):
+    """ 
+    Find images in img folder
+    """
+    image_file = image_file.strip()
+    if image_file.split('/')[0] == 'IMG':
+        image_file = 'drivedata/{}'.format(image_file)
+    return mpimg.imread(image_file)
+
+def augment_img(img, angles):
+    """
+    Flip images if random number<0.5.
+    If new random numer is <0.5 as well, change brightness
+    """
+    if np.random.rand() < 0.5:
+        img = np.fliplr(img)
+        angles = -angles
+    if np.random.rand() < 0.5:
+        delta_pct = random.uniform(0.4, 1.2)
+        hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+        hsv[:, :, 2] = hsv[:, :, 2] * delta_pct
+        img = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+    return img, angles
+
+from keras.optimizers import Adam
+from keras.callbacks import ModelCheckpoint
+from keras.models import Sequential
+from keras.layers import Flatten, Dense, Lambda, Conv2D, Cropping2D, Dropout
 
 def nvidia_net():
-    """ Creates a keras sequential model, derived from NVIDIA's architecture
-    (https://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf),
-    with some minor modifications.
-    Args:
-        None
-    Returns:
-        keras sequential model
+    """
+    Build keras model using NVIDIA autonomous vehicle architecture
     """
     model = Sequential()
     model.add(Lambda(lambda x:(x/255.0)-0.5, input_shape=(160,320,3)))
@@ -110,49 +84,38 @@ def nvidia_net():
     return model
 
 
-def generator(image_paths, steering_angles, batch_size):
-    """ Creates a generator pull pieces of the data and process them on the fly.
-    Args:
-        image_paths (np.array): array of paths to image files
-        steering_angle (np.array): array of steering angles
-        batch_size (int): number of items to process
-    Returns:
-        images (np.array): array of images
-        measurements (np.array): array of steering angles
+def generator(img_path, steering_angles, batch_size):
+    """
+    Returns arrays with images and the corresponding steering angles for training
     """
     images = np.empty([batch_size, 160, 320, 3])
-    measurements = np.empty(batch_size)
+    angles = np.empty(batch_size)
     while True:
         i = 0
-        for index in np.random.permutation(image_paths.shape[0]):
-            center, left, right = image_paths[index]
-            image = load_image(center)
-            measurement = float(steering_angles[index])
+        for index in np.random.permutation(img_path.shape[0]):
+            center, left, right = img_path[index]
+            img = load_image(center)
+            angle = float(steering_angles[index])
 
-            image, measurement = augment(image, measurement)
+            img, angle = augment_img(img, angle)
 
-            images[i] = image
-            measurements[i] = measurement
+            images[i] = img
+            angles[i] = angle
 
             i += 1
             if i == batch_size:
                 break
-        yield images, measurements
+        yield images, angles
 
 
 def main():
-    """Entry point for training the model"""
+    
+    print('Loading data.')
+    
+    X_train, X_val, y_train, y_val = load_data(test_size)
 
-    # Hyperparameters
-    test_size = 0.10
-    batch_size = 64
-    epochs = 9
-    additional_training_data = True
-
-    print('Loading data...')
-    X_train, X_val, y_train, y_val = load_data(test_size, additional_training_data=additional_training_data)
-
-    print('Building model...')
+    print('Building model')
+    
     model = nvidia_net()
 
     checkpoint = ModelCheckpoint('model-{epoch:03d}.h5',
@@ -161,10 +124,12 @@ def main():
                                  save_best_only=True,
                                  mode='auto')
 
-    print('Compiling model...')
+    print('Compiling')
+    
     model.compile(loss='mse', optimizer='adam')
 
-    print('Training model...')
+    print('Training')
+    
     history_object = model.fit_generator(generator(X_train, y_train, batch_size),
                                          steps_per_epoch=len(X_train)/batch_size,
                                          validation_data=generator(X_val, y_val, batch_size),
@@ -173,20 +138,22 @@ def main():
                                          epochs=epochs,
                                          verbose=1)
 
-    print('Saving model...')
     model.save('model.h5')
+    
+    print('Model trained and saved')
 
-    print('Model saved, training complete!')
+    # Print loss
+    print('Loss: '+str(history_object.history['loss']))
+    print('Validation Loss: '+str(history_object.history['val_loss']))
 
-    # summarize history for loss
+    # Plot loss graph
     plt.subplot(111)
     plt.plot(history_object.history['loss'])
     plt.plot(history_object.history['val_loss'])
-    plt.title('model loss')
-    plt.ylabel('loss')
+    plt.title('model MSE loss')
+    plt.ylabel('MSE loss')
     plt.xlabel('epoch')
-    plt.legend(['train', 'test'], loc='upper left')
-
+    plt.legend(['train', 'test'], loc='upper right')
     plt.savefig('history.png', bbox_inches='tight')
 
 if __name__ == '__main__':
