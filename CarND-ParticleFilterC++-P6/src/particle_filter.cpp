@@ -31,6 +31,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    *   (and others in this file).
    */
   num_particles = 5;  // TODO: Set the number of particles
+	std::normal_distribution
 
 }
 
