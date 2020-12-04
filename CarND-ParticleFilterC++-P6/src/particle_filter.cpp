@@ -30,11 +30,27 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
-  num_particles = 5;  // TODO: Set the number of particles
-	std::normal_distribution dist_x
+  num_particles = 100;  // TODO: Set the number of particles
 
+  std::default_random_engine gen;
+  std::normal_distribution<double> dist_x(x, std[0]);
+  std::normal_distribution<double> dist_y(y, std[1]);
+  std::normal_distribution<double> dist_theta(theta, std[2]);
+  
+  for (int i=0; i<num_particles, i++){
+    Particle p;
+    p.id = int(i);
+    p.x = dist_x(gen);
+    p.y = dist_y(gen);
+    p.theta = dist_theta(gen);
+    p.weight = 1.0;
+
+    particles.push_back(p);
+    }
+
+  is_initialized = true;
 }
-
+  
 void ParticleFilter::prediction(double delta_t, double std_pos[], 
                                 double velocity, double yaw_rate) {
   /**
@@ -45,6 +61,17 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
    *  http://www.cplusplus.com/reference/random/default_random_engine/
    */
 
+      
+      std::default_random_engine gen;
+      std::normal_distribution<double> dist_x(0, std_pos[0]);
+      std::normal_distribution<double> dist_x(0, std_pos[1]);
+      std::normal_distribution<double> dist_x(0, std_pos[2]);
+      
+  	  for (int i = 0; i< num_particles; i++) {
+        
+        
+        
+          }
 }
 
 void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted, 
@@ -57,7 +84,12 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
    *   probably find it useful to implement this method and use it as a helper 
    *   during the updateWeights phase.
    */
-
+	for (int i = 0; i< num_particles; i++) {
+      
+      double 
+    }
+  
+  
 }
 
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 
