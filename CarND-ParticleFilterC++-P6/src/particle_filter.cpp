@@ -37,7 +37,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   std::normal_distribution<double> dist_y(y, std[1]);
   std::normal_distribution<double> dist_theta(theta, std[2]);
   
-  for (int i=0; i<num_particles, i++){
+  for (int i=0; i<num_particles; i++){
     Particle p;
     p.id = int(i);
     p.x = dist_x(gen);
@@ -64,13 +64,13 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
       
       std::default_random_engine gen;
       std::normal_distribution<double> dist_x(0, std_pos[0]);
-      std::normal_distribution<double> dist_x(0, std_pos[1]);
-      std::normal_distribution<double> dist_x(0, std_pos[2]);
+      std::normal_distribution<double> dist_y(0, std_pos[1]);
+      std::normal_distribution<double> dist_theta(0, std_pos[2]);
       
   	  for (int i = 0; i< num_particles.size(); i++) {
         double theta = particles[i].theta;
         
-        if (fabs(yaw_rate)<EPS){
+        if (fabs(yaw_rate)<0.00001){
           particles[i].x += velocity * delta_t*cos(theta);
           particles[i].y+=velocity * delta_t*sin(theta);
           
@@ -98,7 +98,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
    */
 	for (int i = 0; i< observations.size(); i++) {
       	int observationID;
-      	double distMin = std:numeric_limits<double>::max();
+      	double distMin = std::numeric_limits<double>::max();
       	for (int j=0; j< predicted.size();j++){
           double distX = observations[i].x - predicted[j].x;
           double distY = observations[i].y - predicted[j].y;
@@ -128,11 +128,15 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
    *   and the following is a good resource for the actual equation to implement
    *   (look at equation 3.33) http://planning.cs.uiuc.edu/node99.html
    */
+  
+  double stdLandmarkRange = std_landmark[0];
+  double stdLandmarkBearing = std_landmark[1];
+  
 	for (int i = 0; i< num_particles; i++) {
         double x = particles[i].x;
         double y = particles[i].y;
         double theta = particles[i].theta;
-    }
+    
         vector<LandmarkObs> inRangeLandmarks;
        for(int j=0; j<map_landmarks.landmark_list.size(); j++){
          int landmarkID = map_landmarks.landmark_list[j].id_i;
@@ -142,7 +146,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
          double landmarkDistY = y -landmarkY;
          
          if(std::pow(landmarkDistX, 2) + std::pow(landmarkDistY, 2)<= std::pow(sensor_range,2)){
-           inRangelandmarks.push_back(LandmarkObs{landmarkID,landmarkX,landmarkY});
+           inRangeLandmarks.push_back(LandmarkObs{landmarkID,landmarkX,landmarkY});
     	}
        }
   
@@ -159,7 +163,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
   particles[i].weight = 1.0;
   for(int j=0;j<mappedObservations.size();j++){
     double observationX = mappedObservations[j].x;
-    double observationX = mappedObservations[j].x;
+    double observationY = mappedObservations[j].y;
     double landmarkX;
     double landmarkY;
     int landmarkId = mappedObservations[j].id;
@@ -185,8 +189,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     }
  }
 }
-                                                                 
-}
+}                                                               
+
   
 
 
