@@ -57,7 +57,7 @@ the path has processed since last time.
 
 #### Sensor Fusion Data, a list of all other car's attributes on the same side of the road. (No Noise)
 
-["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in frenet coordinates, car's d position in frenet coordinates. 
+["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in frenet coordinates, car's d position in frenet coordinates. ]
 
 ## Details
 
@@ -69,41 +69,64 @@ the path has processed since last time.
 
 The project rubric consists of the following points:
 
-###Compilation
+### Compilation
 
-####The code compiles correctly.
-Code must compile without errors with cmake and make. This is the case, al errors during compiling were solved.
+#### The code compiles correctly.
+Code must compile without errors with cmake and make. 
 
-###Valid Trajectories
+This is the case, all errors during compiling were solved.
 
-####The car is able to drive at least 4.32 miles without incident..
+### Valid Trajectories
+
+#### The car is able to drive at least 4.32 miles without incident..
 The top right screen of the simulator shows the current/best miles driven without incident. Incidents include exceeding acceleration/jerk/speed, collision, and driving outside of the lanes. Each incident case is also listed below in more detail.
 
-####The car drives according to the speed limit.
+See attached screenshot:
+![6p5miles](images/image_6p5 miles.jpg)
+
+#### The car drives according to the speed limit.
 The car doesn't drive faster than the speed limit. Also the car isn't driving much slower than speed limit unless obstructed by traffic.
 
-####Max Acceleration and Jerk are not Exceeded.
+No surpassing of the speed limit observed.
+
+#### Max Acceleration and Jerk are not Exceeded.
 The car does not exceed a total acceleration of 10 m/s^2 and a jerk of 10 m/s^3.
 
-####Car does not have collisions.
+Not red warnings were seen.
+
+#### Car does not have collisions.
 The car must not come into contact with any of the other cars on the road.
 
-####The car stays in its lane, except for the time between changing lanes.
+1 collision occured due to another car in the adjacent line just surpassing it's line while the controlling car couldn't move anywhere. I guess this is not a situation in which there is a solution.
+
+#### The car stays in its lane, except for the time between changing lanes.
 The car doesn't spend more than a 3 second length out side the lane lanes during changing lanes, and every other time the car stays inside one of the 3 lanes on the right hand side of the road.
 
-####The car is able to change lanes
+This is the case.
+
+#### The car is able to change lanes
 The car is able to smoothly change lanes when it makes sense to do so, such as when behind a slower moving car and an adjacent lane is clear of other traffic.
 
-###Reflection
+The car smoothly changes lanes when no other car is within the safety margin on the target lane.
 
-####There is a reflection on how to generate paths.
+### Reflection
+
+#### There is a reflection on how to generate paths.
 The code model for generating paths is described in detail. This can be part of the README or a separate doc labeled "Model Documentation".
 
 See section reflection underneath:
 
 ## Reflection
 
-The code for generating paths is based 
+The code for generating paths starts at line 107. Aside from a few variables declared earlier on and the spline header file that is loaded in for use.
+Line 108-120 defines vectors of doubles which will contain the waypoint coordinates as well as the next x/y coordinates. Also a vector of booleans is defined to keep track if a given lane is open or not.
+Line 120-128 loads in sensor fusion data with the frenet coordinates, speed and lane.
+Line 130-142 Are if statements to control behaviour regarding the situation. If a car is within the set margin in the same lane, the car will either slow down or change lane, depending on the other cars in other lanes
+Line 146-159 deals with the amount of acceleration of deccelaration if the car needs to slow down or is slow and needs to gain speed again (and no car is within the safety margin of 25m)
+Line 160-187 Previous path points are used in the waypoint calculations
+Line 189-200 Waypoints ahead are set
+Line 201-243 Using spline, the missing waypoints are calculated to complete the trajectory plan
+
 
 ## Tips
 
