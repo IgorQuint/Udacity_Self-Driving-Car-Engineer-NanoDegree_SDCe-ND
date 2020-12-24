@@ -52,9 +52,11 @@ Using the Extended Kalman Filter equations, an algorithm was developed to predic
 
 ### Localization: Particle Filter (C++)
 This project is a 2 dimensional particle filter in C++, determining the cars location based on sensor measurements of nearby landmarks.
-![Extended Kalman Filter gif](images/pathplanning.gif)
+
+![Extended Kalman Filter gif](images/particlefilter.gif)
 
 
 ### Path planning (C++)
 Using the observed position of other cars within the simulator (LiDAR dots through sensor fusion to coordinates), this algorithm navigates the car within the simulator, changing lanes when necessary and slowing down when other cars occupy the adjecent lines within the safety margin.
+
 ![Extended Kalman Filter gif](images/pathplanning.gif)
