@@ -24,7 +24,7 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
 LOOKAHEAD_WPS = 50 # Number of waypoints we will publish. You can change this number
-
+MAX_DECEL = .25
 
 class WaypointUpdater(object):
     def __init__(self):
@@ -36,11 +36,12 @@ class WaypointUpdater(object):
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
         # Traffic waypoint has a int 32 message type, so I need to import that message type above
         rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
-        rospy.Subscriber('/obstacle_waypoint', Int32, self.obstacle_cb)
+        #rospy.Subscriber('/obstacle_waypoint', Int32, self.obstacle_cb)
 
         self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
 
         # TODO: Add other member variables you need below
+        self.base_lane = None
         self.pose = None
         self.base_waypoints = None
         self.waypoints_2d = None
@@ -117,7 +118,7 @@ class WaypointUpdater(object):
             p.twist.twist.lineair.x = min(vel, wp.twist.twist.lineair.x)
             temp.append(p)
         
-       return temp
+        return temp
     
     def pose_cb(self, msg):
         # TODO: Implement
@@ -127,7 +128,7 @@ class WaypointUpdater(object):
     def waypoints_cb(self, waypoints):
         # TODO: Implement
         # Let's begin with just passing the coming waypoints
-        self.base_waypoints = waypoints
+        self.base_lane = waypoints
         if not self.waypoints_2d:
             # get X and Y points from the waypoints and add them to a tree structure from KDTree
             self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
