@@ -50,7 +50,7 @@ class WaypointUpdater(object):
     
     # We use a loop fuction to have control over the publishing frequency
     def loop(self):
-        rate = rospy.Rate(10) # I can try different rates, down to 30 Hz
+        rate = rospy.Rate(30) # I can try different rates, down to 30 Hz
         while not rospy.is_shutdown():
             if self.pose and self.base_waypoints:
                 # Here I make I have the car position and waypoints before the next functions
@@ -83,11 +83,42 @@ class WaypointUpdater(object):
         return closest_idx
 
     def publish_waypoints(self, closest_idx):
-        lane = Lane()
+        #lane = Lane()
         #lane.header = self.base_waypoints.header
-        lane.waypoints = self.base_waypoints.waypoints[closest_idx:closest_idx + LOOKAHEAD_WPS]
-        self.final_waypoints_pub.publish(lane)
+        #lane.waypoints = self.base_waypoints.waypoints[closest_idx:closest_idx + LOOKAHEAD_WPS]
+        final_lane = self.generate_lane()
+        self.final_waypoints_pub.publish(final_lane)
+    
+    def generate_lane(self):
+        lane = Lane()
+        closest_idx = self.get_closest_waypoint_idx()
+        farthest_idx = closest_idx + LOOKAHEAD_WPS
+        base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
         
+        if self.stopline_wp_idx == -1 or (self.stoplone_wp_idx >= farthest_idx):
+            lane.waypoints = base_waypoints
+        else:
+            lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
+        
+        return lane
+    
+    def decelerate_waypoints(self, waypoints, closest_idx):
+        temp = []
+        for i, wp in enumerate(waypoints):
+            p = Waypoint()
+            p.pose = wp.pose
+            
+            stop_idx = max(self.stopline_wp_idx - closest_idx - 2, 0)
+            dist = self.distance(waypoints, i, stop_idx)
+            vel = math.sqrt(2*MAX_DECEL*dist)
+            if vel < 1. :
+                vel = 0.
+                
+            p.twist.twist.lineair.x = min(vel, wp.twist.twist.lineair.x)
+            temp.append(p)
+        
+       return temp
+    
     def pose_cb(self, msg):
         # TODO: Implement
         # Just assign the incoming position data to the internal variable pose
@@ -106,7 +137,7 @@ class WaypointUpdater(object):
     
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
-        pass
+        self.stopline_wp_idx = msg.data
 
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
