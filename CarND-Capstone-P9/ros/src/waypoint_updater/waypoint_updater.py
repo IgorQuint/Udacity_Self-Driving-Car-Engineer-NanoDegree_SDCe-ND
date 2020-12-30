@@ -24,12 +24,21 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
 LOOKAHEAD_WPS = 80 # Number of waypoints we will publish. You can change this number
-MAX_DECEL = .25
+MAX_DECEL = .4
 
 class WaypointUpdater(object):
     def __init__(self):
         rospy.init_node('waypoint_updater')
 
+        # TODO: Add other member variables you need below
+        self.base_lane = None
+        self.pose = None
+        self.stopline_wp_idx = -1
+        self.base_waypoints = None
+        self.waypoints_2d = None
+        self.waypoint_tree = None
+        
+        
         rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
         rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
 
@@ -40,26 +49,20 @@ class WaypointUpdater(object):
 
         self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
 
-        # TODO: Add other member variables you need below
-        self.base_lane = None
-        self.pose = None
-        self.base_waypoints = None
-        self.waypoints_2d = None
-        self.waypoint_tree = None
-        
+
         self.loop()
     
     # We use a loop fuction to have control over the publishing frequency
     def loop(self):
         rate = rospy.Rate(50) # I can try different rates, down to 30 Hz
         while not rospy.is_shutdown():
-            if self.pose and self.base_waypoints:
+            if self.pose and self.base_lane:
                 # Here I make I have the car position and waypoints before the next functions
                 # I have some trouble where my waypoint_tree is None, and the query function returns an error <<< IMPORTANT 
                 
                 # Get closest waypoint
-                closest_waypoint_idx = self.get_closest_waypoint_idx()
-                self.publish_waypoints(closest_waypoint_idx)
+                #closest_waypoint_idx = self.get_closest_waypoint_idx()
+                self.publish_waypoints()
             rate.sleep()
             
      # Let's define the two functions I need in the loop function
@@ -99,8 +102,7 @@ class WaypointUpdater(object):
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
             lane.waypoints = base_waypoints
         else:
-            #lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
-            lane.waypoints = base_waypoints
+            lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
         return lane
     
     def decelerate_waypoints(self, waypoints, closest_idx):
