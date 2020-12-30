@@ -23,8 +23,8 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
-LOOKAHEAD_WPS = 50 # Number of waypoints we will publish. You can change this number
-MAX_DECEL = .7
+LOOKAHEAD_WPS = 80 # Number of waypoints we will publish. You can change this number
+MAX_DECEL = .25
 
 class WaypointUpdater(object):
     def __init__(self):
@@ -51,7 +51,7 @@ class WaypointUpdater(object):
     
     # We use a loop fuction to have control over the publishing frequency
     def loop(self):
-        rate = rospy.Rate(30) # I can try different rates, down to 30 Hz
+        rate = rospy.Rate(50) # I can try different rates, down to 30 Hz
         while not rospy.is_shutdown():
             if self.pose and self.base_waypoints:
                 # Here I make I have the car position and waypoints before the next functions
@@ -83,7 +83,7 @@ class WaypointUpdater(object):
             closest_idx = (closest_idx + 1) % len(self.waypoints_2d)
         return closest_idx
 
-    def publish_waypoints(self, closest_idx):
+    def publish_waypoints(self):
         #lane = Lane()
         #lane.header = self.base_waypoints.header
         #lane.waypoints = self.base_waypoints.waypoints[closest_idx:closest_idx + LOOKAHEAD_WPS]
@@ -96,11 +96,11 @@ class WaypointUpdater(object):
         farthest_idx = closest_idx + LOOKAHEAD_WPS
         base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
         
-        if self.stopline_wp_idx == -1 or (self.stoplone_wp_idx >= farthest_idx):
+        if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
             lane.waypoints = base_waypoints
         else:
-            lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
-        
+            #lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
+            lane.waypoints = base_waypoints
         return lane
     
     def decelerate_waypoints(self, waypoints, closest_idx):
@@ -115,7 +115,7 @@ class WaypointUpdater(object):
             if vel < 1. :
                 vel = 0.
                 
-            p.twist.twist.lineair.x = min(vel, wp.twist.twist.lineair.x)
+            p.twist.twist.linear.x = min(vel, wp.twist.twist.linear.x)
             temp.append(p)
         
         return temp
