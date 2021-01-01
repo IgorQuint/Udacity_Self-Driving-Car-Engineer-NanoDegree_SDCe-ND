@@ -111,7 +111,7 @@ def generator(img_path, steering_angles, batch_size):
                 break
         yield images, angles
 
-
+#can be removed?
 def main():
     
     print('Loading data.')
