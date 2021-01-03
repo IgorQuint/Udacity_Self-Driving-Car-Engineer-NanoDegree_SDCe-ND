@@ -34,13 +34,13 @@ class WaypointUpdater(object):
         self.base_lane = None
         self.pose = None
         self.stopline_wp_idx = -1
-        self.base_waypoints = None
+        #self.base_waypoints = None
         self.waypoints_2d = None
         self.waypoint_tree = None
         
         
         rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
-        rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
+        base_waypoints_sub = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
 
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
         # Traffic waypoint has a int 32 message type, so I need to import that message type above
@@ -54,7 +54,7 @@ class WaypointUpdater(object):
     
     # We use a loop fuction to have control over the publishing frequency
     def loop(self):
-        rate = rospy.Rate(50) # I can try different rates, down to 30 Hz
+        rate = rospy.Rate(20) # I can try different rates, down to 30 Hz
         while not rospy.is_shutdown():
             if self.pose and self.base_lane:
                 # Here I make I have the car position and waypoints before the next functions
@@ -111,7 +111,7 @@ class WaypointUpdater(object):
             p = Waypoint()
             p.pose = wp.pose
             
-            stop_idx = max(self.stopline_wp_idx - closest_idx - 2, 0)
+            stop_idx = max(self.stopline_wp_idx - closest_idx - 3, 0)
             dist = self.distance(waypoints, i, stop_idx)
             vel = math.sqrt(2*MAX_DECEL*dist)
             if vel < 1. :
@@ -135,7 +135,9 @@ class WaypointUpdater(object):
             # get X and Y points from the waypoints and add them to a tree structure from KDTree
             self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
             self.waypoint_tree = KDTree(self.waypoints_2d)
+        
 
+        
     ##### So far, What I have above is all I need to see the waypoints. This is the partial Waypoint Updater :) ######
     
     def traffic_cb(self, msg):
