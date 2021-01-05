@@ -10,7 +10,8 @@
 | Team member-3 | Sushrutha Krishnamurthy      |    sushukrish@gmail.com |
 
 
-### [Rubric](https://review.udacity.com/#!/rubrics/1969/view) Points
+### Project Rubric
+See the rubric points here: [Rubric](https://review.udacity.com/#!/rubrics/1969/view) 
 
 ### Project Overview
 The project was executed by the above team. The code development was shared within the team and tested independently by each team member. The results were discussed, and bug fixed in stages.
