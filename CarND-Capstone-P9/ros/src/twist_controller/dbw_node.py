@@ -80,7 +80,7 @@ class DBWNode(object):
         """ Get predicted throttle, brake, and steering using `twist_controller` periodically at given time (frequency)
             It only publish the control commands if dbw is enabled
         """
-        rate = rospy.Rate(50) # 50Hz
+        rate = rospy.Rate(20) # 20Hz
         while not rospy.is_shutdown():
             if not None in (self.current_vel, self.linear_vel, self.angular_vel):
                 self.throttle, self.brake, self.steering = self.controller.control( self.current_vel, 
