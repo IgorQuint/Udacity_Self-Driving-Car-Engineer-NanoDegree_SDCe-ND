@@ -54,13 +54,12 @@ class WaypointUpdater(object):
     
     # We use a loop fuction to have control over the publishing frequency
     def loop(self):
-        rate = rospy.Rate(20) # I can try different rates, down to 30 Hz
+        rate = rospy.Rate(20) # I can try different rates, down to 20 Hz
         while not rospy.is_shutdown():
             if self.pose and self.base_lane:
-                # Here I make I have the car position and waypoints before the next functions
-                # I have some trouble where my waypoint_tree is None, and the query function returns an error <<< IMPORTANT 
+                # First, we have to be sure that we received the Car Position and Waypoints.
                 
-                # Get closest waypoint
+                # Get closest waypoint. This was for the Partial Waypoint Updater before using twist control.
                 #closest_waypoint_idx = self.get_closest_waypoint_idx()
                 self.publish_waypoints()
             rate.sleep()
@@ -86,7 +85,8 @@ class WaypointUpdater(object):
             if val > 0:
                 closest_idx = (closest_idx + 1) % len(self.waypoints_2d)
             return closest_idx
-
+    
+    # The first method is responsible of Publishing the Waypoints generated in the generate_lane method.
     def publish_waypoints(self):
         #lane = Lane()
         #lane.header = self.base_waypoints.header
@@ -94,26 +94,33 @@ class WaypointUpdater(object):
         final_lane = self.generate_lane()
         self.final_waypoints_pub.publish(final_lane)
     
+    # This second method takes the closest waypoint and the number of waypoints ahead and generate a list of the waypoints the car has to follow
     def generate_lane(self):
         lane = Lane()
         closest_idx = self.get_closest_waypoint_idx()
         farthest_idx = closest_idx + LOOKAHEAD_WPS
         base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
         
+        # In case the car does not find a RED traffic light ahead, or the traffic light is far, we just add the base_waypoints to the car lane waypoints
+        # stopline is -1 when the Traffic light is NOT red
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
             lane.waypoints = base_waypoints
+            
+        # If there IS a  RED traffic light ahead and near, we use the Method decelerate_waypoints to change the car behaviour
         else:
             lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
         return lane
     
+    # This third method is used when there is a RED traffic light infront of our car.
     def decelerate_waypoints(self, waypoints, closest_idx):
         temp = []
         for i, wp in enumerate(waypoints):
             p = Waypoint()
             p.pose = wp.pose
-            
+            # 
             stop_idx = max(self.stopline_wp_idx - closest_idx - 3, 0)
             dist = self.distance(waypoints, i, stop_idx)
+            # A mathematical function to adjust the decreasing speed to the distance between the car and the stopping point. This is for the car to stop smoothly
             vel = math.sqrt(2*MAX_DECEL*dist)
             if vel < 1. :
                 vel = 0.
@@ -123,6 +130,7 @@ class WaypointUpdater(object):
         
         return temp
     
+    # Callback functions for the ROS topics
     def pose_cb(self, msg):
         # TODO: Implement
         # Just assign the incoming position data to the internal variable pose
@@ -138,9 +146,7 @@ class WaypointUpdater(object):
             self.waypoint_tree = KDTree(self.waypoints_2d)
         
         #self.base_waypoints_sub.unregister()
-        
-    ##### So far, What I have above is all I need to see the waypoints. This is the partial Waypoint Updater :) ######
-    
+          
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
         self.stopline_wp_idx = msg.data
