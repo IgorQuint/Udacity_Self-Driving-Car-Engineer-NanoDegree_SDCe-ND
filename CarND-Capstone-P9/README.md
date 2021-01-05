@@ -10,6 +10,8 @@
 | Team member-3 | Sushrutha Krishnamurthy      |    sushukrish@gmail.com |
 
 
+### [Rubric](https://review.udacity.com/#!/rubrics/1969/view) Points
+
 ### Project Overview
 The project was executed by the above team. The code development was shared within the team and tested independently by each team member. The results were discussed, and bug fixed in stages.
 
@@ -60,7 +62,32 @@ The calculated throttle, brake and steer values are returned
 
 
 ### DBW Node
+After we had the Waypoints Updater publish the desired waypoints for the car to follow, the DBW node will take the desired
+linear and angular velocities of the car, and send control commands to the twist_controller.
+First, we declare the publishers, which are steering_cmd, throttle_cmd and brake_cmd.
+Then, we initialize the Controller object with all the necessary car parameters.
+After this, we declare the Subscribers:
+* dbw_enabled as a security measure in case the software encounters some trouble, this disables any control command sent to
+the car.
+* twist_cmd has the "goal" linear and angular velocities. Through the controller, the car will try to get to these velocities
+* current_velocity has the current car velocity, which is needed by the controller get the error value.
 
+The final part of initialization, are the variables declation of the car parameters, which will be used through all the code.
+In the file, these steps are in the following code lines:
+* Code line from 50 to 55 are the command publishers.
+* Code line from 63 to 72 is the Controller object initialization.
+* Code line from 75 to 77 are the Topics subscriptions.
+* Code line from 80 to 85 are the needed variable declarations.
+
+The Loop Method will check if we get messages from the subscribers. If these messages are not empty, we call the control
+method from the controller object to get the control commands for the car (throttle, brake and steering).
+Like mentioned above, we will only publish these values if we receive a True dbw_enabled message.
+If dbw_enabled is True, we will use the Publish method to send the correct messages to the respective Publishers.
+The other Methods here are just callbacks to assign the needed variables from the subscribed topics.
+
+* Code line from 89 to 107 here is the Loop method
+* Code line from 119 to 135 here is the Publish method.
+* Code line from 109 to 117 here are the callbacks methods.
 
 
 ### Traffic Light Detection
