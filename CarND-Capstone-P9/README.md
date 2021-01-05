@@ -76,7 +76,7 @@ This file contains implementation of the SSD MobileNet v1 classifier.
 It receives the image from camera and returns the traffic light state: RED, YELLOW, GREEN and UNKNOWN.
 For this project, we have used the training datasets and model config prepared by Udacity student [Vatsal Srivastava](https://github.com/coldKnight/TrafficLight_Detection-TensorFlowAPI) in SSD MobileNet v1 classifier.
 
-For more detailed information on how to install and train TensorFlow Object Detection API, please refer to [instructions here](./instructions.md).
+For more detailed information on how to install and train TensorFlow Object Detection API, please refer to [instructions here](./instructions_TLclassifier.md).
 
 The traffic light detection node subscribes to four topics:
 
