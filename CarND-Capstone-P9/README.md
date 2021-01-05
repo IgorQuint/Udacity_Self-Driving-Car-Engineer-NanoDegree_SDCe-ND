@@ -1,74 +1,78 @@
-This is the project repo for the final project of the Udacity Self-Driving Car Nanodegree: Programming a Real Self-Driving Car. For more information about the project, see the project introduction [here](https://classroom.udacity.com/nanodegrees/nd013/parts/6047fe34-d93c-4f50-8336-b70ef10cb4b2/modules/e1a23b06-329a-4684-a717-ad476f0d8dff/lessons/462c933d-9f24-42d3-8bdc-a08a5fc866e4/concepts/5ab4b122-83e6-436d-850f-9f4d26627fd9).
+## Self Driving Car Engineer ND - Capstone Project
 
-Please use **one** of the two installation options, either native **or** docker installation.
 
-### Native Installation
+### Project Team
+| Team position        | Name           | Email  |
+| ------------- |:-------------:| -----:|
+| Team leader      | Igor Quint | igorquint@gmail.com |
+| Team member-1      | Felipe Rojas      |   epilefrojasleon@gmail.com |
+| Team member-2 | Enkhtuvshin Janchivnyambuu      |    enkhtuvshinj@gmail.com |
+| Team member-3 | Sushrutha Krishnamurthy      |    sushukrish@gmail.com |
 
-* Be sure that your workstation is running Ubuntu 16.04 Xenial Xerus or Ubuntu 14.04 Trusty Tahir. [Ubuntu downloads can be found here](https://www.ubuntu.com/download/desktop).
-* If using a Virtual Machine to install Ubuntu, use the following configuration as minimum:
-  * 2 CPU
-  * 2 GB system memory
-  * 25 GB of free hard drive space
 
-  The Udacity provided virtual machine has ROS and Dataspeed DBW already installed, so you can skip the next two steps if you are using this.
+### Project Overview
+The project was executed by the above team. The code development was shared within the team and tested independently by each team member. The results were discussed, and bug fixed in stages.
+The code development is based on the instructions provided by the walkthrough videos. The coding was implemented in 4-steps:
+Steps-1 Partial Waypoint: Partial implementation of the waypoint_updater.py with the goal of generating waypoints, to have the vehicle follow the waypoints, ignoring the traffic lights.
+Step-2 DBW: Implementing the twist_controller such that the twist commands are converted into accelerator, brake and steering command to control the vehicle.
+Step-3 Traffic light detection: Initially the true traffic state was used to implement vehicle deceleration at red traffic light. Later traffic light detection and traffic light identification was implemented through tensor flow classification
+Step-4 Waypoint updater: The waypoint updater logic now has the topic traffic_waypoint as subscriber and fully implements this information into the waypoints calculation
+Below are details of the code-implementation in the different modules
+  
 
-* Follow these instructions to install ROS
-  * [ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu) if you have Ubuntu 16.04.
-  * [ROS Indigo](http://wiki.ros.org/indigo/Installation/Ubuntu) if you have Ubuntu 14.04.
-* [Dataspeed DBW](https://bitbucket.org/DataspeedInc/dbw_mkz_ros)
-  * Use this option to install the SDK on a workstation that already has ROS installed: [One Line SDK Install (binary)](https://bitbucket.org/DataspeedInc/dbw_mkz_ros/src/81e63fcc335d7b64139d7482017d6a97b405e250/ROS_SETUP.md?fileviewer=file-view-default)
-* Download the [Udacity Simulator](https://github.com/udacity/CarND-Capstone/releases).
+### Waypoint Updater Node
+This node publishes final waypoints which contain the right linear and angular target velocities. Waypoint updater uses base waypoints and the current position, as well as the detected traffic lights (through the traffic_waypoint topic subscription).
 
-### Docker Installation
-[Install Docker](https://docs.docker.com/engine/installation/)
+Base waypoints are provided by a static csv file. The current position is obtained through a message by the simulator. The final waypoints are published and picked up by the waypoint follower node.
 
-Build the docker container
-```bash
-docker build . -t capstone
-```
+The function set_waypoint velocity adjust the linear velocity of a waypoint if for example a red traffic light is nearby. The distance function is used to calculate the distance between waypoints which is used to properly decelerate when a red traffic light is close.
 
-Run the docker file
-```bash
-docker run -p 4567:4567 -v $PWD:/capstone -v /tmp/log:/root/.ros/ --rm -it capstone
-```
 
-### Port Forwarding
-To set up port forwarding, please refer to the [instructions from term 2](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/16cf4a78-4fc7-49e1-8621-3450ca938b77)
+### Twist Controller
+The libraries PID, yaw_controller and lowpass are imported at the start. The class controller is implemented and the arguments of the class are set.
 
-### Usage
+For the steering control the yaw controller is called and provided with the values wheel_base, steer_ratio, min_speed, max_lat_accel, max_steer_angle. The minimum speed for steering calculation has been set to 0.1
 
-1. Clone the project repository
-```bash
-git clone https://github.com/udacity/CarND-Capstone.git
-```
+For the throttle control the PID controller is called. The Kp, Ki and Kd values as well as the the max- and min- throttle values are set after a few experimentations. 
 
-2. Install python dependencies
-```bash
-cd CarND-Capstone
-pip install -r requirements.txt
-```
-3. Make and run styx
-```bash
-cd ros
-catkin_make
-source devel/setup.sh
-roslaunch launch/styx.launch
-```
-4. Run the simulator
+The current velocity is filtered through a low pass filter. The cutoff frequency for the filtering is also set
 
-### Real world testing
-1. Download [training bag](https://s3-us-west-1.amazonaws.com/udacity-selfdrivingcar/traffic_light_bag_file.zip) that was recorded on the Udacity self-driving car.
-2. Unzip the file
-```bash
-unzip traffic_light_bag_file.zip
-```
-3. Play the bag file
-```bash
-rosbag play -l traffic_light_bag_file/traffic_light_training.bag
-```
-4. Launch your project in site mode
-```bash
-cd CarND-Capstone/ros
-roslaunch launch/site.launch
-```
-5. Confirm that traffic light detection works on real life images
+The function control is defined to return the throttle, brake and steering values, based on the inputs: self, current_vel, dbw_enabled, linear_vel, angular_vel
+
+If the simulator returns dbw_ enabled as inactive the return values are zero and the car will not be controlled by the controller
+
+Otherwise the yaw controller and the PID controllers control the steering and the throttle respectively. 
+
+If the target velocity is zero and the vehicle current velocity is below 0.1 brakes are applied with a constant torque of 700 Nm to prevent the car from rolling.  Else if, the car is above the threshold speed and vehicle deceleration is required, the brake torque is calculated based on the set deceleration limit, vehicle mass, wheel radius and the error between the current and the desired velocities.
+
+The calculated throttle, brake and steer values are returned 
+
+
+
+### DBW Node
+
+
+
+### Traffic Light Detection
+This node predicts a color of traffic light, that ego vehicle is approaching, using trained **SSD MobileNet v1** of [TensorFlow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) for traffic light detection by feeding camera data. 
+The traffic light detection package consists of two python files:
+
+* **tl_detector.py** - 
+This python file processes the incoming traffic light data and camera images. 
+It uses the light classifier implemented in **tl_classifier.py** to get a upcoming traffic light state, and publishes the location of traffic light stop line if the traffic light state is RED.
+
+* **tl_classifier.py** -
+This file contains implementation of the SSD MobileNet v1 classifier. 
+It receives the image from camera and returns the traffic light state: RED, YELLOW, GREEN and UNKNOWN.
+For this project, we have used the training datasets and model config prepared by Udacity student [Vatsal Srivastava](https://github.com/coldKnight/TrafficLight_Detection-TensorFlowAPI) in SSD MobileNet v1 classifier.
+
+For more detailed information on how to install and train TensorFlow Object Detection API, please refer to [instructions here](./instructions.md).
+
+The traffic light detection node subscribes to four topics:
+
+* **/base_waypoints** provides the complete list of waypoints for the course.
+* **/current_pose** can be used to determine the vehicle's location.
+* **/image_color** which provides an image stream from the car's camera. These images are used to determine the color of upcoming traffic lights.
+* **/vehicle/traffic_lights** provides the (x, y, z) coordinates of all traffic lights.
+
+The node publishes the index of the waypoint for nearest upcoming red light's stop line to a single topic **/traffic_waypoint**.
