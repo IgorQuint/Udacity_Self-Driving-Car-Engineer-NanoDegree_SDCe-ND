@@ -3,7 +3,7 @@
 
 ### Project Team
 | Team position        | Name           | Email  |
-| ------------- |:-------------:| -----:|
+| ------------- | ------------- | -----:|
 | Team leader      | Igor Quint | igorquint@gmail.com |
 | Team member-1      | Felipe Rojas      |   epilefrojasleon@gmail.com |
 | Team member-2 | Enkhtuvshin Janchivnyambuu      |    enkhtuvshinj@gmail.com |
@@ -12,11 +12,21 @@
 
 ### Project Overview
 The project was executed by the above team. The code development was shared within the team and tested independently by each team member. The results were discussed, and bug fixed in stages.
+
 The code development is based on the instructions provided by the walkthrough videos. The coding was implemented in 4-steps:
-Steps-1 Partial Waypoint: Partial implementation of the waypoint_updater.py with the goal of generating waypoints, to have the vehicle follow the waypoints, ignoring the traffic lights.
-Step-2 DBW: Implementing the twist_controller such that the twist commands are converted into accelerator, brake and steering command to control the vehicle.
-Step-3 Traffic light detection: Initially the true traffic state was used to implement vehicle deceleration at red traffic light. Later traffic light detection and traffic light identification was implemented through tensor flow classification
-Step-4 Waypoint updater: The waypoint updater logic now has the topic traffic_waypoint as subscriber and fully implements this information into the waypoints calculation
+
+* **Step-1 Partial Waypoint**-
+Partial implementation of the waypoint_updater.py with the goal of generating waypoints, to have the vehicle follow the waypoints, ignoring the traffic lights.
+
+* **Step-2 DBW**-
+Implementing the twist_controller such that the twist commands are converted into accelerator, brake and steering command to control the vehicle.
+
+* **Step-3 Traffic light detection**-
+Initially the true traffic state was used to implement vehicle deceleration at red traffic light. Later traffic light detection and traffic light identification was implemented through tensor flow classification
+
+* **Step-4 Waypoint updater**-
+The waypoint updater logic now has the topic traffic_waypoint as subscriber and fully implements this information into the waypoints calculation
+
 Below are details of the code-implementation in the different modules
   
 
