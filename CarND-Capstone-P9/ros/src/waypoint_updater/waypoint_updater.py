@@ -6,6 +6,7 @@ from styx_msgs.msg import Lane, Waypoint
 # for the traffic_waypoint
 from std_msgs.msg import Int32
 
+
 # For locating the closest waypoint in space
 from scipy.spatial import KDTree
 
@@ -23,14 +24,14 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
-LOOKAHEAD_WPS = 80 # Number of waypoints we will publish. You can change this number
+LOOKAHEAD_WPS = 80  # Number of waypoints we will publish. You can change this number
 MAX_DECEL = .4
 
 class WaypointUpdater(object):
     def __init__(self):
         rospy.init_node('waypoint_updater')
 
-        # TODO: Add other member variables you need below
+        # Member variables for waypoint updater
         self.base_lane = None
         self.pose = None
         self.stopline_wp_idx = -1
@@ -38,22 +39,21 @@ class WaypointUpdater(object):
         self.waypoints_2d = None
         self.waypoint_tree = None
         
-        
         rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
         base_waypoints_sub = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
 
-        # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
-        # Traffic waypoint has a int 32 message type, so I need to import that message type above
+        # Subscribe to /traffic_waypoint and /obstacle_waypoint
+        # Traffic waypoint has a int 32 message type
         rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
         #rospy.Subscriber('/obstacle_waypoint', Int32, self.obstacle_cb)
 
+        # Publisher for final waypoints
         self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
-
 
         self.loop()
     
-    # We use a loop fuction to have control over the publishing frequency
     def loop(self):
+        """ A loop fuction to have control over the publishing frequency """
         rate = rospy.Rate(20) # I can try different rates, down to 30 Hz
         while not rospy.is_shutdown():
             if self.pose and self.base_lane:
@@ -65,8 +65,8 @@ class WaypointUpdater(object):
                 self.publish_waypoints()
             rate.sleep()
             
-     # Let's define the two functions I need in the loop function
     def get_closest_waypoint_idx(self):
+        """ Returns the closest waypoints to ego car """
         x = self.pose.pose.position.x
         y = self.pose.pose.position.y
         
@@ -86,7 +86,8 @@ class WaypointUpdater(object):
             if val > 0:
                 closest_idx = (closest_idx + 1) % len(self.waypoints_2d)
             return closest_idx
-
+            
+    """ The method is responsible of Publishing the Waypoints generated in the generate_lane method."""
     def publish_waypoints(self):
         #lane = Lane()
         #lane.header = self.base_waypoints.header
@@ -94,18 +95,24 @@ class WaypointUpdater(object):
         final_lane = self.generate_lane()
         self.final_waypoints_pub.publish(final_lane)
     
+    """ This method takes the closest waypoint and the number of waypoints ahead and generate a list of the waypoints the car has to follow"""
     def generate_lane(self):
         lane = Lane()
         closest_idx = self.get_closest_waypoint_idx()
         farthest_idx = closest_idx + LOOKAHEAD_WPS
         base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
         
+        # In case the car does not find a RED traffic light ahead, or the traffic light is far, we just add the base_waypoints to the car lane waypoints
+        # stopline is -1 when the Traffic light is NOT red
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
             lane.waypoints = base_waypoints
+        
+        # If there IS a  RED traffic light ahead and near, we use the Method decelerate_waypoints to change the car behaviour
         else:
             lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
         return lane
-    
+        
+    """ This method is used when there is a RED traffic light infront of our car."""
     def decelerate_waypoints(self, waypoints, closest_idx):
         temp = []
         for i, wp in enumerate(waypoints):
@@ -114,6 +121,7 @@ class WaypointUpdater(object):
             
             stop_idx = max(self.stopline_wp_idx - closest_idx - 3, 0)
             dist = self.distance(waypoints, i, stop_idx)
+            # A mathematical function to adjust the decreasing speed to the distance between the car and the stopping point. This is for the car to stop smoothly
             vel = math.sqrt(2*MAX_DECEL*dist)
             if vel < 1. :
                 vel = 0.
@@ -124,12 +132,10 @@ class WaypointUpdater(object):
         return temp
     
     def pose_cb(self, msg):
-        # TODO: Implement
-        # Just assign the incoming position data to the internal variable pose
+        """ Assign the incoming position data to the internal variable pose """
         self.pose = msg
 
     def waypoints_cb(self, waypoints):
-        # TODO: Implement
         # Let's begin with just passing the coming waypoints
         self.base_lane = waypoints
         if not self.waypoints_2d:
@@ -139,8 +145,6 @@ class WaypointUpdater(object):
         
         #self.base_waypoints_sub.unregister()
         
-    ##### So far, What I have above is all I need to see the waypoints. This is the partial Waypoint Updater :) ######
-    
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
         self.stopline_wp_idx = msg.data
