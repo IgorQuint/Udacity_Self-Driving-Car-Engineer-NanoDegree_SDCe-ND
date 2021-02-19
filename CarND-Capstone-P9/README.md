@@ -57,7 +57,6 @@ If the simulator returns dbw_ enabled as inactive the return values are zero and
 Otherwise the yaw controller and the PID controllers control the steering and the throttle respectively. 
 
 If the target velocity is zero and the vehicle current velocity is below 0.1 brakes are applied with a constant torque of 700 Nm to prevent the car from rolling.  Else if, the car is above the threshold speed and vehicle deceleration is required, the brake torque is calculated based on the set deceleration limit, vehicle mass, wheel radius and the error between the current and the desired velocities.
-
 The calculated throttle, brake and steer values are returned 
 
 
